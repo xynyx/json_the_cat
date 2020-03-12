@@ -1,24 +1,17 @@
 const request = require('request');
-const breed = process.argv[2];
 
-
-
-const requestBreed = () => request(`https://api.thecatapi.com/v1/breeds/search/?q=${breed}`, (error, response, body) => {
-  // console.log(body);
-  // console.log(data)
-  // console.log(error);
+const fetchBreedDescription = (breedName, callback) => request(`https://api.thecatapi.com/v1/breeds/search/?q=${breedName}`, (error, response, body) => {
   if (error) {
-    console.log(error);
-    process.exit();
-  }
-  const data = JSON.parse(body);
-  if (data[0] === undefined) {
-    console.log("That breed does not exist.");
-    process.exit();
+    callback(error);
   } else {
-    console.log(data[0].description);
+    const data = JSON.parse(body);
+    if (data[0] === undefined) {
+      callback("That breed does not exist.");
+      process.exit();
+    } else {
+      callback(null, data[0].description.trim());
+    }
   }
-
   //   typeof (body) = string
   // console.log(body, typeof (body));
   // console.log(data);
@@ -27,4 +20,4 @@ const requestBreed = () => request(`https://api.thecatapi.com/v1/breeds/search/?
   // It is actually an array of one, so you have to access the array first and then the key
 });
 
-requestBreed();
+module.exports = { fetchBreedDescription };
